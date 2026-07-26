@@ -4,7 +4,20 @@
 
 Watching a Coursera lecture, sitting in a Zoom Web meeting, or catching a webinar in a language you don't speak? Click the extension icon once. You will hear a spoken translation and see live subtitles at the bottom of the page, within about a second.
 
-![Live subtitles overlaid on a YouTube video while its audio is translated in real time](Assets/photo_2026-07-26_21-47-33.jpg)
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="Assets/photo_2026-07-26_21-47-33.jpg" alt="Live subtitles overlaid on a YouTube video while its audio is translated in real time">
+    </td>
+    <td width="50%" valign="top">
+      <img src="Assets/photo_2026-07-26_21-38-24.jpg" alt="The Live Translate settings page, showing the API key field, target language, playback smoothness, and echo option">
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Translating live, with subtitles</sub></td>
+    <td align="center"><sub>Settings</sub></td>
+  </tr>
+</table>
 
 - ⚡ **One click** — no model picker, no tab-sharing dialog, no per-session configuration
 - 🗣️ **Listen and read** — synthesized speech plus subtitles showing both the translation and the original transcript
@@ -54,8 +67,6 @@ That's it. 🎉
 | **Change settings** | Right-click the icon → **Options**. |
 
 ### Available settings
-
-![The Live Translate settings page, showing the API key field, target language, playback smoothness, and echo option](Assets/photo_2026-07-26_21-38-24.jpg)
 
 | Setting | What it does |
 |---|---|
