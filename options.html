@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cài đặt — Live Translate</title>
+<title>Settings — Live Translate</title>
 <link rel="stylesheet" href="options.css">
 </head>
 <body>
@@ -12,15 +12,15 @@
       <div class="logo" aria-hidden="true">🎧</div>
       <div>
         <h1>Live Translate</h1>
-        <p class="subtitle">Dịch audio của tab sang tiếng Việt theo thời gian thực</p>
+        <p class="subtitle">Real-time translation of the audio playing in your browser tab</p>
       </div>
     </header>
 
     <div class="card">
       <div class="steps">
-        <div class="step"><span class="step-num">1</span> Điền API key và ngôn ngữ đích bên dưới, bấm <strong>Lưu</strong></div>
-        <div class="step"><span class="step-num">2</span> Mở tab cần dịch (YouTube, webinar, Zoom Web…)</div>
-        <div class="step"><span class="step-num">3</span> <strong>Click icon extension</strong> — nghe audio dịch + đọc phụ đề. Click lần nữa để dừng</div>
+        <div class="step"><span class="step-num">1</span> Enter your API key and target language below, then click <strong>Save</strong></div>
+        <div class="step"><span class="step-num">2</span> Open the tab you want translated (YouTube, a webinar, Zoom Web…)</div>
+        <div class="step"><span class="step-num">3</span> <strong>Click the extension icon</strong> — hear the translation and read the subtitles. Click again to stop</div>
       </div>
     </div>
 
@@ -29,55 +29,56 @@
         <label for="apiKey">Google AI Studio API key</label>
         <div class="key-row">
           <input id="apiKey" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false">
-          <button id="toggleKey" type="button" class="btn-icon" title="Hiện / ẩn key">👁</button>
-          <button id="testKey" type="button" class="btn-secondary">Kiểm tra</button>
+          <button id="toggleKey" type="button" class="btn-icon" title="Show / hide key">👁</button>
+          <button id="testKey" type="button" class="btn-secondary">Test</button>
         </div>
         <p id="testResult" class="test-result" role="status"></p>
         <p class="hint">
-          Lấy key miễn phí tại
+          Get a free key at
           <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>
-          (không cần thẻ). Model Live Translate nằm trong free tier — chi phí 0đ giống hệt khi bạn dùng
-          trực tiếp trên aistudio.google.com/live, miễn là không vượt hạn mức free.
-          Key chỉ được lưu trong trình duyệt trên máy bạn và chỉ gửi tới máy chủ Google.
+          (no payment method required). The Live Translate model is included in the free tier, so it costs
+          nothing — exactly as when you use aistudio.google.com/live directly — as long as you stay within
+          the free quota. Your key is stored only in this browser on your own machine, and is sent only to
+          Google's servers.
         </p>
       </section>
 
       <section>
-        <label for="targetLanguage">Ngôn ngữ đích</label>
+        <label for="targetLanguage">Target language</label>
         <select id="targetLanguage"></select>
       </section>
 
       <section>
-        <label for="bufferMode">Độ mượt audio dịch</label>
+        <label for="bufferMode">Playback smoothness</label>
         <select id="bufferMode">
-          <option value="fast">Ưu tiên nhanh — độ trễ thấp nhất, mạng yếu dễ bị đứt tiếng</option>
-          <option value="balanced">Cân bằng (khuyên dùng)</option>
-          <option value="smooth">Ưu tiên mượt — đệm nhiều hơn, chậm hơn ~1 giây nhưng ít ngắt quãng nhất</option>
+          <option value="fast">Favor speed — lowest delay, more prone to dropouts on a weak connection</option>
+          <option value="balanced">Balanced (recommended)</option>
+          <option value="smooth">Favor smoothness — larger buffer, about one second slower, fewest interruptions</option>
         </select>
         <p class="hint">
-          Nếu tiếng dịch hay bị ngắt giữa câu, chọn <strong>Ưu tiên mượt</strong>. Bộ đệm là thích ứng:
-          tự tăng khi mạng chập chờn và tự giảm về mức thấp nhất khi mạng ổn định, nên độ trễ luôn
-          ở mức tối thiểu mà mạng của bạn cho phép.
+          If the translated speech keeps breaking up mid-sentence, choose <strong>Favor smoothness</strong>.
+          The buffer is adaptive: it grows when the network becomes unstable and shrinks back down once the
+          connection is steady, so the delay always stays as low as your network allows.
         </p>
       </section>
 
       <section>
         <label class="checkbox">
           <input id="echoTargetLanguage" type="checkbox">
-          <span>Nếu audio nguồn đã là ngôn ngữ đích thì đọc lại nguyên văn <span class="muted">(mặc định: im lặng)</span></span>
+          <span>When the source audio is already in the target language, read it back verbatim <span class="muted">(default: stay silent)</span></span>
         </label>
       </section>
 
       <div class="actions">
-        <button id="save" class="btn-primary">Lưu cài đặt</button>
+        <button id="save" class="btn-primary">Save settings</button>
         <span id="savedNote" class="saved-note" role="status"></span>
       </div>
     </div>
 
     <footer>
       <p>
-        Mẹo: giữ âm lượng tab nguồn rõ ràng và dùng mạng ổn định để bản dịch mượt nhất.
-        Extension không thu thập hay gửi dữ liệu đi đâu ngoài máy chủ Google.
+        Tip: keep the source tab's audio clear and use a stable connection for the smoothest translation.
+        This extension collects no data and sends nothing anywhere except to Google's servers.
       </p>
     </footer>
   </main>

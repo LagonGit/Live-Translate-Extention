@@ -133,7 +133,7 @@ chrome.action.onClicked.addListener(async (tab) => {
     await notifyTab(tab.id, {
       type: 'status',
       state: 'error',
-      message: 'Không bắt được audio của tab này. Trang hệ thống (chrome://, Web Store) không hỗ trợ.',
+      message: 'Cannot capture audio from this tab. Browser-internal pages (chrome://, the Web Store) are not supported.',
     });
     setTimeout(() => setBadge(tab.id, ''), 4000);
   } finally {
@@ -182,7 +182,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       notifyTab(tabId, { type: 'turn' });
       break;
     case 'error': {
-      const msg = typeof message.message === 'string' ? message.message.slice(0, 300) : 'Lỗi không xác định';
+      const msg = typeof message.message === 'string' ? message.message.slice(0, 300) : 'Unknown error';
       notifyTab(tabId, { type: 'status', state: 'error', message: msg });
       stopTranslation(tabId, { notifyStopped: false });
       break;

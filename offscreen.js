@@ -96,8 +96,8 @@ async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoT
 
   const buffering = BUFFER_MODES[bufferMode] || BUFFER_MODES.balanced;
 
-  if (typeof apiKey !== 'string' || !apiKey) throw new Error('Chưa có API key. Mở phần Cài đặt của extension.');
-  if (typeof streamId !== 'string' || !streamId) throw new Error('Không lấy được stream audio của tab.');
+  if (typeof apiKey !== 'string' || !apiKey) throw new Error('No API key set. Open the extension settings.');
+  if (typeof streamId !== 'string' || !streamId) throw new Error('Could not obtain the tab audio stream.');
   if (typeof targetLanguageCode !== 'string' || !/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})?$/.test(targetLanguageCode)) {
     targetLanguageCode = 'vi';
   }
@@ -213,14 +213,14 @@ function connectWebSocket(s) {
       sendToBackground({
         type: 'error',
         tabId: s.tabId,
-        message: event.reason ? `Máy chủ từ chối kết nối: ${event.reason}` : 'Không kết nối được. Kiểm tra lại API key trong Cài đặt.',
+        message: event.reason ? `The server refused the connection: ${event.reason}` : 'Could not connect. Check your API key in Settings.',
       });
       stopSessionInternal();
       return;
     }
 
     if (s.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      sendToBackground({ type: 'error', tabId: s.tabId, message: 'Mất kết nối với máy chủ dịch và không thể kết nối lại.' });
+      sendToBackground({ type: 'error', tabId: s.tabId, message: 'Lost the connection to the translation server and could not reconnect.' });
       stopSessionInternal();
       return;
     }

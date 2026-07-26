@@ -1,6 +1,6 @@
 // BCP-47 codes supported by the Live Translate model (per ai.google.dev docs).
 const LANGUAGES = [
-  ['vi', 'Vietnamese (Tiếng Việt)'],
+  ['vi', 'Vietnamese'],
   ['en', 'English'],
   ['af', 'Afrikaans'], ['ak', 'Akan'], ['sq', 'Albanian'], ['am', 'Amharic'],
   ['ar', 'Arabic'], ['hy', 'Armenian'], ['az', 'Azerbaijani'], ['eu', 'Basque'],
@@ -66,10 +66,10 @@ function setTestResult(text, cls) {
 testKeyButton.addEventListener('click', async () => {
   const key = apiKeyInput.value.trim();
   if (!key) {
-    setTestResult('Hãy nhập API key trước.', 'warn');
+    setTestResult('Enter an API key first.', 'warn');
     return;
   }
-  setTestResult('Đang kiểm tra…', 'pending');
+  setTestResult('Testing…', 'pending');
   testKeyButton.disabled = true;
   try {
     const controller = new AbortController();
@@ -80,14 +80,14 @@ testKeyButton.addEventListener('click', async () => {
     );
     clearTimeout(timer);
     if (res.ok) {
-      setTestResult('✓ Key hợp lệ và hoạt động.', 'ok');
+      setTestResult('✓ Key is valid and working.', 'ok');
     } else if (res.status === 400 || res.status === 401 || res.status === 403) {
-      setTestResult(`✗ Key không hợp lệ hoặc bị từ chối (HTTP ${res.status}).`, 'err');
+      setTestResult(`✗ Key is invalid or was rejected (HTTP ${res.status}).`, 'err');
     } else {
-      setTestResult(`Máy chủ Google trả về lỗi HTTP ${res.status}. Thử lại sau.`, 'err');
+      setTestResult(`Google returned HTTP ${res.status}. Please try again later.`, 'err');
     }
   } catch (e) {
-    setTestResult('Không kết nối được tới Google. Kiểm tra mạng.', 'err');
+    setTestResult('Could not reach Google. Check your network connection.', 'err');
   } finally {
     testKeyButton.disabled = false;
   }
@@ -101,7 +101,7 @@ saveButton.addEventListener('click', async () => {
     echoTargetLanguage: echoCheckbox.checked,
     bufferMode: bufferModeSelect.value,
   });
-  savedNote.textContent = key ? 'Đã lưu. Giờ chỉ cần click icon extension trên tab cần dịch.' : 'Đã lưu (chưa có API key).';
+  savedNote.textContent = key ? 'Saved. Now just click the extension icon on the tab you want translated.' : 'Saved (no API key set).';
   savedNote.classList.add('show');
   setTimeout(() => savedNote.classList.remove('show'), 4000);
 });

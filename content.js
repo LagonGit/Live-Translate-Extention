@@ -82,16 +82,16 @@
     if (message.type === 'status') {
       switch (message.state) {
         case 'starting':
-          setStatus('connecting', 'Đang kết nối…');
+          setStatus('connecting', 'Connecting…');
           break;
         case 'running':
-          setStatus('on', 'Đang dịch trực tiếp');
+          setStatus('on', 'Translating live');
           break;
         case 'reconnecting':
-          setStatus('connecting', 'Mất kết nối — đang thử lại…');
+          setStatus('connecting', 'Connection lost — retrying…');
           break;
         case 'error':
-          setStatus('error', String(message.message || 'Có lỗi xảy ra').slice(0, 300));
+          setStatus('error', String(message.message || 'Something went wrong').slice(0, 300));
           removeTimer = setTimeout(removeOverlay, 8000);
           break;
         case 'stopped':
