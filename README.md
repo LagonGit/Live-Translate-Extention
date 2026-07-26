@@ -1,96 +1,132 @@
 # 🎧 Live Translate
 
-**Dịch audio của bất kỳ tab Chrome nào sang tiếng Việt, ngay lúc đang phát — chỉ 1 click.**
+**Translate the audio of any Chrome tab in real time — one click, no setup rituals.**
 
-Đang xem khoá học Coursera, họp Zoom Web, webinar hay video YouTube tiếng Anh? Bấm icon extension một lần: bạn sẽ nghe giọng đọc tiếng Việt và thấy phụ đề nổi ở cuối trang, gần như tức thì.
+Watching a Coursera lecture, sitting in a Zoom Web meeting, or catching a webinar in a language you don't speak? Click the extension icon once. You will hear a spoken translation and see live subtitles at the bottom of the page, within about a second.
 
-- ⚡ **1 click** — không cần chọn model, không cần share tab, không cần setup gì thêm
-- 🗣️ **Nghe + đọc** — vừa có giọng dịch, vừa có phụ đề (bản dịch kèm lời gốc)
-- 🌍 **70+ ngôn ngữ** đích, mặc định tiếng Việt
-- 💸 **Miễn phí** — dùng free tier của Google, không cần thẻ tín dụng
-- 🔒 **Không thu thập dữ liệu** — không analytics, không server trung gian
+- ⚡ **One click** — no model picker, no tab-sharing dialog, no per-session configuration
+- 🗣️ **Listen and read** — synthesized speech plus subtitles showing both the translation and the original transcript
+- 🌍 **70+ target languages** — Vietnamese by default, changeable at any time
+- 🎚️ **Tunable latency** — trade delay against smoothness to match your connection
+- 💸 **Free to run** — uses Google's free tier; no credit card required
+- 🔒 **No data collection** — no analytics, no intermediary server, no third parties
 
-Chạy bằng Live Translate API của Google AI Studio.
+Powered by the Live Translate API from Google AI Studio.
 
----
-
-## 📥 Cài đặt (3 phút)
-
-### Bước 1 — Tải extension
-
-Bấm **Code → Download ZIP** ở đầu trang này, rồi **giải nén** file vừa tải.
-
-> Giữ lại thư mục đã giải nén — đừng xoá, Chrome cần nó để chạy extension.
-
-### Bước 2 — Nạp vào Chrome
-
-1. Mở tab mới, vào `chrome://extensions`
-2. Bật **Developer mode** (công tắc ở góc phải trên)
-3. Bấm **Load unpacked** → chọn thư mục vừa giải nén
-4. Ghim icon extension lên thanh công cụ cho dễ bấm (icon 🧩 → biểu tượng ghim)
-
-### Bước 3 — Lấy API key miễn phí
-
-1. Vào [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → **Create API key** (đăng nhập Google là xong, **không cần thẻ**)
-2. Copy key
-3. Click icon extension → trang Cài đặt tự mở → dán key vào → bấm **Kiểm tra** → bấm **Lưu**
-
-Xong. 🎉
+> **Note on language:** the extension's own interface is currently in Vietnamese. Everything in this document is in English.
 
 ---
 
-## ▶️ Cách dùng
+## 📥 Installation (about 3 minutes)
 
-| | |
+### Step 1 — Download the extension
+
+Click **Code → Download ZIP** at the top of this page, then **extract** the archive.
+
+> Keep the extracted folder. Chrome loads the extension directly from that location — deleting or moving it will break the extension.
+
+### Step 2 — Load it into Chrome
+
+1. Open a new tab and go to `chrome://extensions`
+2. Enable **Developer mode** (toggle in the top-right corner)
+3. Click **Load unpacked** and select the extracted folder
+4. Pin the extension to your toolbar for quick access (🧩 icon → pin)
+
+### Step 3 — Get a free API key
+
+1. Go to [aistudio.google.com/apikey](https://aistudio.google.com/apikey) and click **Create API key**. Signing in with a Google account is all it takes — **no payment method required**.
+2. Copy the key.
+3. Click the extension icon. The settings page opens automatically on first run. Paste the key, verify it, and save.
+
+That's it. 🎉
+
+---
+
+## ▶️ Usage
+
+| Action | How |
 |---|---|
-| **Bắt đầu dịch** | Mở tab đang phát nội dung → **click icon extension**. Badge hiện `ON`, tiếng gốc tắt, giọng dịch phát ra kèm phụ đề. |
-| **Dừng** | **Click icon lần nữa.** Tiếng gốc trở lại bình thường. |
-| **Đổi sang tab khác** | Cứ click icon ở tab mới — phiên cũ tự dừng. |
-| **Đổi ngôn ngữ** | Click phải icon → **Options** → chọn ngôn ngữ đích → **Lưu**. |
+| **Start translating** | Open the tab that is playing audio, then **click the extension icon**. The badge reads `ON`, the original audio is muted, and the translated speech plays with subtitles. |
+| **Stop** | **Click the icon again.** The original audio returns to normal. |
+| **Switch tabs** | Just click the icon in the new tab — the previous session stops on its own. |
+| **Change settings** | Right-click the icon → **Options**. |
 
----
+### Available settings
 
-## 💰 Chi phí
-
-Model Live Translate có **free tier: 0đ, không cần thẻ** — giống hệt khi bạn dùng trực tiếp trên [aistudio.google.com/live](https://aistudio.google.com/live).
-
-Chỉ khi bạn đã tự bật billing **và** dùng vượt hạn mức free tier thì mới bị tính phí (~$0.037/phút audio).
-
-⚠️ Lưu ý về free tier: Google có thể dùng dữ liệu để cải thiện sản phẩm. Đừng dùng cho nội dung bảo mật.
-
----
-
-## 🔒 Quyền riêng tư
-
-- API key **chỉ lưu trên máy bạn** (`chrome.storage.local`), chỉ gửi tới máy chủ Google qua TLS
-- Extension **không** chạy script trên các trang bạn duyệt — phụ đề chỉ chèn vào đúng tab bạn bấm dịch
-- Không analytics, không mã tải từ xa, không bên thứ ba. Toàn bộ source code nằm ngay trong repo này, bạn đọc được hết.
-
----
-
-## 🛠️ Gặp vấn đề?
-
-| Hiện tượng | Cách xử lý |
+| Setting | What it does |
 |---|---|
-| Badge hiện `ERR` | Trang hệ thống (`chrome://`, Chrome Web Store) không bắt được audio — thử trên trang web thường. |
-| "Không kết nối được. Kiểm tra lại API key" | Mở Cài đặt → bấm **Kiểm tra**. Tạo key mới nếu cần. |
-| Có phụ đề nhưng không nghe tiếng dịch | Kiểm tra âm lượng hệ thống, rồi click icon 2 lần (dừng + bật lại). |
-| Mất phụ đề sau khi chuyển trang | Audio vẫn dịch tiếp; click icon 2 lần để hiện lại phụ đề. |
-| "Mất kết nối — đang thử lại…" | Mạng chập chờn, extension tự kết nối lại tối đa 4 lần. |
+| **API key** | Your Google AI Studio key. Includes a built-in check so you can confirm the key works before saving. |
+| **Target language** | 70+ languages. Defaults to Vietnamese. |
+| **Playback smoothness** | Three profiles — *fast* (lowest delay, more prone to dropouts on a weak connection), *balanced* (recommended), and *smooth* (roughly one extra second of buffer, fewest interruptions). |
+| **Echo matching audio** | When the source audio is already in your target language, choose whether to re-read it verbatim or stay silent (silent by default). |
 
 ---
 
-## Dành cho developer
+## 💰 Cost
+
+The Live Translate model has a **free tier that costs nothing and requires no credit card** — the same tier you get using [aistudio.google.com/live](https://aistudio.google.com/live) directly.
+
+Charges (~$0.037 per minute of audio) apply only if you have enabled billing on your Google Cloud account **and** exceed the free-tier quota.
+
+⚠️ **Free-tier caveat:** Google may use free-tier data to improve its products. Do not use this extension for confidential material.
+
+---
+
+## 🔒 Privacy
+
+- Your API key is stored **only on your machine** via `chrome.storage.local`, and is transmitted only to Google's API endpoint over TLS.
+- The extension does **not** run scripts on the pages you browse. Subtitles are injected solely into the tab where you clicked the icon, using the narrowly scoped `activeTab` permission.
+- No analytics, no remotely hosted code, no third-party services. The complete source is in this repository and is short enough to audit yourself.
+
+### Permissions and why they are needed
+
+| Permission | Purpose |
+|---|---|
+| `tabCapture` | Captures the audio stream of the tab you explicitly activate. This is the extension's core function. |
+| `offscreen` | Audio capture and playback require `AudioContext`, which service workers cannot use. An offscreen document handles PCM processing. |
+| `storage` | Persists your API key and preferences locally. |
+| `activeTab` | Limits page access to the single tab you act on, avoiding broad host permissions. |
+| `scripting` | Injects the subtitle overlay into that one tab, on demand. |
+
+---
+
+## 🛠️ Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| Badge shows `ERR` | Browser-internal pages (`chrome://`, the Chrome Web Store) cannot be captured. Try an ordinary website. |
+| Connection error asking you to re-check the API key | Open the settings page and run the key check. Create a new key if it fails. |
+| Subtitles appear but no translated speech | Check your system volume, then click the icon twice (stop, then start again). |
+| Subtitles vanish after navigating within the tab | Audio translation continues. Click the icon twice to restore the overlay. |
+| Repeated reconnection messages | An unstable network. The extension retries automatically, up to four times. |
+| Choppy or dropped words | Open **Options** and switch playback smoothness to *smooth*. |
+
+---
+
+## 🧑‍💻 Development
 
 ```bash
-./build.sh          # tạo dist/live-translate-v<version>.zip
-./build.sh --crx    # tạo cả .zip và .crx
+./build.sh          # produces dist/live-translate-v<version>.zip
+./build.sh --crx    # produces both .zip and .crx
 ```
 
-Yêu cầu: Chrome 116+ (Manifest V3, `offscreen`, `tabCapture`).
+**Requirements:** Chrome 116 or later (Manifest V3, `offscreen`, `tabCapture`).
 
-File `.zip` dùng để upload lên Chrome Web Store. Lần đầu chạy `--crx` sẽ sinh `key.pem` — backup lại và **không commit**, vì extension ID được suy ra từ nó.
+The `.zip` is what you upload to the Chrome Web Store. The first `--crx` run generates `key.pem`; back it up and **never commit it**, since the extension ID is derived from that key and losing it means you can no longer ship updates to existing users.
 
-## Giấy phép
+### Project structure
 
-[MIT](LICENSE) — tự do dùng, sửa, phân phối. Copyright © 2026 Long Lagon.
+| File | Role |
+|---|---|
+| `manifest.json` | Manifest V3 declaration |
+| `background.js` | Service worker — toolbar action, session lifecycle, offscreen document management |
+| `offscreen.js` | Audio capture, resampling to 16 kHz PCM, WebSocket session, playback scheduling |
+| `pcm-worklet.js` | `AudioWorklet` processor that emits captured PCM frames |
+| `content.js` / `content.css` | Subtitle overlay injected into the active tab |
+| `options.*` | Settings page |
+
+---
+
+## License
+
+[MIT](LICENSE) — free to use, modify, and distribute. Copyright © 2026 Long Lagon.
