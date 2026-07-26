@@ -1,53 +1,92 @@
-# Live Translate cho tab (Gemini)
+# 🎧 Live Translate cho tab (Gemini)
 
-Extension Chrome dịch audio của tab hiện tại sang tiếng Việt (hoặc 70+ ngôn ngữ khác) theo thời gian thực bằng model `gemini-3.5-live-translate-preview` — chỉ cần **1 click**, không cần vào Google AI Studio và làm thủ công các bước chọn model / share tab audio.
+**Dịch audio của bất kỳ tab Chrome nào sang tiếng Việt, ngay lúc đang phát — chỉ 1 click.**
 
-## Cài đặt
+Đang xem khoá học Coursera, họp Zoom Web, webinar hay video YouTube tiếng Anh? Bấm icon extension một lần: bạn sẽ nghe giọng đọc tiếng Việt và thấy phụ đề nổi ở cuối trang, gần như tức thì.
 
-1. Tải source (`Code → Download ZIP`, giải nén) hoặc `git clone` repo này.
-2. Mở `chrome://extensions`, bật **Developer mode** (góc phải trên).
-3. Bấm **Load unpacked** và chọn thư mục vừa giải nén.
-4. Click icon extension lần đầu → trang Cài đặt tự mở:
-   - Dán **Gemini API key** (lấy miễn phí tại [aistudio.google.com/apikey](https://aistudio.google.com/apikey), không cần thẻ). Bấm **Kiểm tra** để xác nhận key hoạt động.
-   - Chọn **ngôn ngữ đích** (mặc định: Tiếng Việt).
-   - Bấm **Lưu**.
+- ⚡ **1 click** — không cần chọn model, không cần share tab, không cần setup gì thêm
+- 🗣️ **Nghe + đọc** — vừa có giọng dịch, vừa có phụ đề (bản dịch kèm lời gốc)
+- 🌍 **70+ ngôn ngữ** đích, mặc định tiếng Việt
+- 💸 **Miễn phí** — dùng free tier của Google, không cần thẻ tín dụng
+- 🔒 **Không thu thập dữ liệu** — không analytics, không server trung gian
 
-> Lưu ý: file `.crx` tải trực tiếp từ mạng sẽ bị Chrome chặn cài (chính sách từ Chrome 75). Cách cài đúng là **Load unpacked** như trên, hoặc chờ bản trên Chrome Web Store.
+Chạy bằng model `gemini-3.5-live-translate-preview` của Google.
 
-## Sử dụng
+---
 
-- Mở tab đang phát nội dung cần dịch (YouTube, Coursera, webinar, Zoom Web…).
-- **Click icon extension** → badge hiện `ON`, audio gốc tắt tiếng, audio dịch phát ra kèm phụ đề (bản dịch + lời gốc) nổi ở cuối trang.
-- **Click lần nữa** để dừng — audio gốc trở lại bình thường.
-- Chuyển sang dịch tab khác: cứ click icon ở tab đó, phiên cũ tự dừng.
+## 📥 Cài đặt (3 phút)
 
-## Chi phí
+### Bước 1 — Tải extension
 
-Model Live Translate có **free tier** (0đ, không cần thẻ) — giống hệt khi dùng trực tiếp trên aistudio.google.com/live. Nếu dùng vượt hạn mức free tier và bạn đã bật billing thì mới bị tính (~$0.037/phút audio). Lưu ý free tier: Google có thể dùng dữ liệu để cải thiện sản phẩm.
+Bấm **Code → Download ZIP** ở đầu trang này, rồi **giải nén** file vừa tải.
 
-## Bảo mật & quyền riêng tư
+> Giữ lại thư mục đã giải nén — đừng xoá, Chrome cần nó để chạy extension.
 
-- API key chỉ lưu trong `chrome.storage.local` trên máy bạn, chỉ được gửi tới `generativelanguage.googleapis.com` (máy chủ Google) qua TLS.
-- Extension **không** chạy script trên các trang web bạn duyệt; phụ đề chỉ được chèn vào đúng tab bạn bấm dịch (quyền `activeTab`).
-- Không có mã từ xa, không analytics, không gửi dữ liệu cho bên thứ ba. CSP khóa kết nối chỉ cho phép tới Google.
+### Bước 2 — Nạp vào Chrome
 
-## Đóng gói (dành cho dev)
+1. Mở tab mới, vào `chrome://extensions`
+2. Bật **Developer mode** (công tắc ở góc phải trên)
+3. Bấm **Load unpacked** → chọn thư mục vừa giải nén
+4. Ghim icon extension lên thanh công cụ cho dễ bấm (icon 🧩 → biểu tượng ghim)
 
-```bash
-./build.sh          # tạo dist/live-translate-tab-gemini-v<version>.zip
-./build.sh --crx    # tạo cả .zip và .crx (cần Google Chrome)
-```
+### Bước 3 — Lấy API key miễn phí
 
-- `.zip` là file dùng để upload lên [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole) (phí đăng ký $5 một lần).
-- `.crx` chỉ hữu ích khi tự phân phối qua enterprise policy. Lần đầu chạy `--crx` sẽ sinh `key.pem` ở gốc project — **backup file này và không bao giờ commit nó**, vì extension ID được suy ra từ nó; mất key là mất khả năng phát hành bản cập nhật cho người dùng cũ.
-- Muốn ra bản mới: sửa `version` trong `manifest.json` rồi build lại.
+1. Vào [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → **Create API key** (đăng nhập Google là xong, **không cần thẻ**)
+2. Copy key
+3. Click icon extension → trang Cài đặt tự mở → dán key vào → bấm **Kiểm tra** → bấm **Lưu**
 
-## Xử lý sự cố
+Xong. 🎉
+
+---
+
+## ▶️ Cách dùng
+
+| | |
+|---|---|
+| **Bắt đầu dịch** | Mở tab đang phát nội dung → **click icon extension**. Badge hiện `ON`, tiếng gốc tắt, giọng dịch phát ra kèm phụ đề. |
+| **Dừng** | **Click icon lần nữa.** Tiếng gốc trở lại bình thường. |
+| **Đổi sang tab khác** | Cứ click icon ở tab mới — phiên cũ tự dừng. |
+| **Đổi ngôn ngữ** | Click phải icon → **Options** → chọn ngôn ngữ đích → **Lưu**. |
+
+---
+
+## 💰 Chi phí
+
+Model Live Translate có **free tier: 0đ, không cần thẻ** — giống hệt khi bạn dùng trực tiếp trên [aistudio.google.com/live](https://aistudio.google.com/live).
+
+Chỉ khi bạn đã tự bật billing **và** dùng vượt hạn mức free tier thì mới bị tính phí (~$0.037/phút audio).
+
+⚠️ Lưu ý về free tier: Google có thể dùng dữ liệu để cải thiện sản phẩm. Đừng dùng cho nội dung bảo mật.
+
+---
+
+## 🔒 Quyền riêng tư
+
+- API key **chỉ lưu trên máy bạn** (`chrome.storage.local`), chỉ gửi tới máy chủ Google qua TLS
+- Extension **không** chạy script trên các trang bạn duyệt — phụ đề chỉ chèn vào đúng tab bạn bấm dịch
+- Không analytics, không mã tải từ xa, không bên thứ ba. Toàn bộ source code nằm ngay trong repo này, bạn đọc được hết.
+
+---
+
+## 🛠️ Gặp vấn đề?
 
 | Hiện tượng | Cách xử lý |
 |---|---|
-| Badge `ERR` khi click | Trang hệ thống (`chrome://`, Web Store) không bắt được audio — thử trên trang web thường. |
-| "Không kết nối được. Kiểm tra lại API key" | Mở Cài đặt → bấm **Kiểm tra** key; tạo key mới nếu cần. |
-| Có phụ đề nhưng không nghe tiếng dịch | Kiểm tra âm lượng hệ thống; thử dừng và bật lại. |
-| Mất phụ đề sau khi chuyển trang trong tab | Audio vẫn dịch tiếp; click icon 2 lần (dừng + bật lại) để hiện lại phụ đề. |
-| "Mất kết nối — đang thử lại…" | Mạng chập chờn; extension tự kết nối lại tối đa 4 lần. |
+| Badge hiện `ERR` | Trang hệ thống (`chrome://`, Chrome Web Store) không bắt được audio — thử trên trang web thường. |
+| "Không kết nối được. Kiểm tra lại API key" | Mở Cài đặt → bấm **Kiểm tra**. Tạo key mới nếu cần. |
+| Có phụ đề nhưng không nghe tiếng dịch | Kiểm tra âm lượng hệ thống, rồi click icon 2 lần (dừng + bật lại). |
+| Mất phụ đề sau khi chuyển trang | Audio vẫn dịch tiếp; click icon 2 lần để hiện lại phụ đề. |
+| "Mất kết nối — đang thử lại…" | Mạng chập chờn, extension tự kết nối lại tối đa 4 lần. |
+
+---
+
+## Dành cho developer
+
+```bash
+./build.sh          # tạo dist/live-translate-tab-gemini-v<version>.zip
+./build.sh --crx    # tạo cả .zip và .crx
+```
+
+Yêu cầu: Chrome 116+ (Manifest V3, `offscreen`, `tabCapture`).
+
+File `.zip` dùng để upload lên Chrome Web Store. Lần đầu chạy `--crx` sẽ sinh `key.pem` — backup lại và **không commit**, vì extension ID được suy ra từ nó.
