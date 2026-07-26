@@ -107,12 +107,9 @@ Charges (~$0.037 per minute of audio) apply only if you have enabled billing on 
 
 ```bash
 ./build.sh          # produces dist/live-translate-v<version>.zip
-./build.sh --crx    # produces both .zip and .crx
 ```
 
 **Requirements:** Chrome 116 or later (Manifest V3, `offscreen`, `tabCapture`).
-
-The `.zip` is what you upload to the Chrome Web Store. The first `--crx` run generates `key.pem`; back it up and **never commit it**, since the extension ID is derived from that key and losing it means you can no longer ship updates to existing users.
 
 ### Project structure
 
