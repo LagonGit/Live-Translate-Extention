@@ -13,7 +13,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
-NAME="live-translate-tab-gemini"
+NAME="live-translate"
 VERSION="$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' manifest.json | head -1 | sed 's/.*"\([0-9][^"]*\)"/\1/')"
 [ -n "$VERSION" ] || { echo "Không đọc được version trong manifest.json"; exit 1; }
 

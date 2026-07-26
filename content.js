@@ -82,7 +82,7 @@
     if (message.type === 'status') {
       switch (message.state) {
         case 'starting':
-          setStatus('connecting', 'Đang kết nối Gemini Live Translate…');
+          setStatus('connecting', 'Đang kết nối…');
           break;
         case 'running':
           setStatus('on', 'Đang dịch trực tiếp');

@@ -1,4 +1,4 @@
-# 🎧 Live Translate cho tab (Gemini)
+# 🎧 Live Translate
 
 **Dịch audio của bất kỳ tab Chrome nào sang tiếng Việt, ngay lúc đang phát — chỉ 1 click.**
 
@@ -10,7 +10,7 @@
 - 💸 **Miễn phí** — dùng free tier của Google, không cần thẻ tín dụng
 - 🔒 **Không thu thập dữ liệu** — không analytics, không server trung gian
 
-Chạy bằng model `gemini-3.5-live-translate-preview` của Google.
+Chạy bằng Live Translate API của Google AI Studio.
 
 ---
 
@@ -83,7 +83,7 @@ Chỉ khi bạn đã tự bật billing **và** dùng vượt hạn mức free t
 ## Dành cho developer
 
 ```bash
-./build.sh          # tạo dist/live-translate-tab-gemini-v<version>.zip
+./build.sh          # tạo dist/live-translate-v<version>.zip
 ./build.sh --crx    # tạo cả .zip và .crx
 ```
 

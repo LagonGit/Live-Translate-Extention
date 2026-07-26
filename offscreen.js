@@ -1,5 +1,5 @@
 // Runs inside the extension's offscreen document. Has DOM/Web Audio access that a
-// service worker doesn't, so tab-audio capture, resampling, the Gemini Live
+// service worker doesn't, so tab-audio capture, resampling, the Google Live
 // WebSocket, and translated-audio playback all live here.
 
 const WS_URL_BASE =
@@ -213,14 +213,14 @@ function connectWebSocket(s) {
       sendToBackground({
         type: 'error',
         tabId: s.tabId,
-        message: event.reason ? `Gemini từ chối kết nối: ${event.reason}` : 'Không kết nối được. Kiểm tra lại API key trong Cài đặt.',
+        message: event.reason ? `Máy chủ từ chối kết nối: ${event.reason}` : 'Không kết nối được. Kiểm tra lại API key trong Cài đặt.',
       });
       stopSessionInternal();
       return;
     }
 
     if (s.reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      sendToBackground({ type: 'error', tabId: s.tabId, message: 'Mất kết nối với Gemini và không thể kết nối lại.' });
+      sendToBackground({ type: 'error', tabId: s.tabId, message: 'Mất kết nối với máy chủ dịch và không thể kết nối lại.' });
       stopSessionInternal();
       return;
     }
@@ -234,7 +234,7 @@ function connectWebSocket(s) {
   };
 }
 
-// ---------- upstream: tab audio -> Gemini ----------
+// ---------- upstream: tab audio -> Live API ----------
 
 function onCapturedSamples(s, samples) {
   if (session !== s) return;
@@ -291,7 +291,7 @@ function drainQueue(s) {
   }
 }
 
-// ---------- downstream: Gemini -> transcripts + translated audio ----------
+// ---------- downstream: Live API -> transcripts + translated audio ----------
 
 function handleServerMessage(s, data) {
   // The Live API sends JSON in binary frames as well as text frames.

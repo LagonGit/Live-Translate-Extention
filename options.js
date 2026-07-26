@@ -1,4 +1,4 @@
-// BCP-47 codes supported by Gemini 3.5 Live Translate (per ai.google.dev docs).
+// BCP-47 codes supported by the Live Translate model (per ai.google.dev docs).
 const LANGUAGES = [
   ['vi', 'Vietnamese (Tiếng Việt)'],
   ['en', 'English'],

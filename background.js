@@ -29,7 +29,7 @@ async function ensureOffscreenDocument() {
     url: OFFSCREEN_URL,
     reasons: ['USER_MEDIA', 'AUDIO_PLAYBACK'],
     justification:
-      'Capture tab audio, stream it to the Gemini Live API for real-time translation, and play the translated audio back.',
+      'Capture tab audio, stream it to the Google Live API for real-time translation, and play the translated audio back.',
   });
 }
 
