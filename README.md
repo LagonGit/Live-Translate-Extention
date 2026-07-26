@@ -103,27 +103,6 @@ Charges (~$0.037 per minute of audio) apply only if you have enabled billing on 
 
 ---
 
-## 🧑‍💻 Development
-
-```bash
-./build.sh          # produces dist/live-translate-v<version>.zip
-```
-
-**Requirements:** Chrome 116 or later (Manifest V3, `offscreen`, `tabCapture`).
-
-### Project structure
-
-| File | Role |
-|---|---|
-| `manifest.json` | Manifest V3 declaration |
-| `background.js` | Service worker — toolbar action, session lifecycle, offscreen document management |
-| `offscreen.js` | Audio capture, resampling to 16 kHz PCM, WebSocket session, playback scheduling |
-| `pcm-worklet.js` | `AudioWorklet` processor that emits captured PCM frames |
-| `content.js` / `content.css` | Subtitle overlay injected into the active tab |
-| `options.*` | Settings page |
-
----
-
 ## License
 
 [MIT](LICENSE) — free to use, modify, and distribute. Copyright © 2026 Long Lagon.
