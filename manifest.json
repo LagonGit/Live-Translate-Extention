@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Live Translate",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "One click to translate the audio of your current tab into 70+ languages in real time, with live subtitles.",
   "homepage_url": "https://github.com/LagonGit/Live-Translate-Extention",
   "permissions": ["tabCapture", "offscreen", "storage", "activeTab", "scripting"],
