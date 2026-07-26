@@ -7,5 +7,6 @@
 # Thư mục build
 dist/
 
-# Bản zip cũ để lẫn ở gốc repo
+# Gói đã build để lẫn ở gốc repo
 *.zip
+*.crx

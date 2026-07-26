@@ -90,3 +90,7 @@ Chỉ khi bạn đã tự bật billing **và** dùng vượt hạn mức free t
 Yêu cầu: Chrome 116+ (Manifest V3, `offscreen`, `tabCapture`).
 
 File `.zip` dùng để upload lên Chrome Web Store. Lần đầu chạy `--crx` sẽ sinh `key.pem` — backup lại và **không commit**, vì extension ID được suy ra từ nó.
+
+## Giấy phép
+
+[MIT](LICENSE) — tự do dùng, sửa, phân phối. Copyright © 2026 Long Lagon.
