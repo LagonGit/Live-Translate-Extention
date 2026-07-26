@@ -1,0 +1,99 @@
+#__live-translate-overlay {
+  all: initial;
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  max-width: min(760px, 92vw);
+  min-width: 280px;
+  z-index: 2147483647;
+  background: rgba(12, 14, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 11px 18px 13px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #f3f4f6;
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  pointer-events: none;
+  user-select: none;
+  text-align: left;
+  animation: __lt-fade-in 0.25s ease-out;
+}
+
+@keyframes __lt-fade-in {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+#__live-translate-overlay .lt-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+#__live-translate-overlay .lt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex: none;
+}
+
+#__live-translate-overlay[data-state="on"] .lt-dot {
+  animation: __lt-pulse 1.6s ease-in-out infinite;
+}
+
+#__live-translate-overlay[data-state="connecting"] .lt-dot {
+  background: #f59e0b;
+  animation: __lt-pulse 0.9s ease-in-out infinite;
+}
+
+#__live-translate-overlay[data-state="error"] .lt-dot {
+  background: #ef4444;
+}
+
+@keyframes __lt-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+#__live-translate-overlay .lt-status-text {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #a5b4fc;
+}
+
+#__live-translate-overlay[data-state="error"] .lt-status-text {
+  color: #fca5a5;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 13px;
+}
+
+#__live-translate-overlay .lt-output {
+  font-size: 17px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #f9fafb;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#__live-translate-overlay .lt-input {
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #8b93a3;
+}
+
+#__live-translate-overlay .lt-output:empty,
+#__live-translate-overlay .lt-input:empty {
+  display: none;
+}

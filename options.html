@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cài đặt — Live Translate cho tab</title>
+<link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="logo" aria-hidden="true">🎧</div>
+      <div>
+        <h1>Live Translate cho tab</h1>
+        <p class="subtitle">Dịch audio thời gian thực bằng Gemini 3.5 Live Translate</p>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="steps">
+        <div class="step"><span class="step-num">1</span> Điền API key và ngôn ngữ đích bên dưới, bấm <strong>Lưu</strong></div>
+        <div class="step"><span class="step-num">2</span> Mở tab cần dịch (YouTube, webinar, Zoom Web…)</div>
+        <div class="step"><span class="step-num">3</span> <strong>Click icon extension</strong> — nghe audio dịch + đọc phụ đề. Click lần nữa để dừng</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <section>
+        <label for="apiKey">Gemini API key</label>
+        <div class="key-row">
+          <input id="apiKey" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false">
+          <button id="toggleKey" type="button" class="btn-icon" title="Hiện / ẩn key">👁</button>
+          <button id="testKey" type="button" class="btn-secondary">Kiểm tra</button>
+        </div>
+        <p id="testResult" class="test-result" role="status"></p>
+        <p class="hint">
+          Lấy key miễn phí tại
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>
+          (không cần thẻ). Model Live Translate nằm trong free tier — chi phí 0đ giống hệt khi bạn dùng
+          trực tiếp trên aistudio.google.com/live, miễn là không vượt hạn mức free.
+          Key chỉ được lưu trong trình duyệt trên máy bạn và chỉ gửi tới máy chủ Google.
+        </p>
+      </section>
+
+      <section>
+        <label for="targetLanguage">Ngôn ngữ đích</label>
+        <select id="targetLanguage"></select>
+      </section>
+
+      <section>
+        <label for="bufferMode">Độ mượt audio dịch</label>
+        <select id="bufferMode">
+          <option value="fast">Ưu tiên nhanh — độ trễ thấp nhất, mạng yếu dễ bị đứt tiếng</option>
+          <option value="balanced">Cân bằng (khuyên dùng)</option>
+          <option value="smooth">Ưu tiên mượt — đệm nhiều hơn, chậm hơn ~1 giây nhưng ít ngắt quãng nhất</option>
+        </select>
+        <p class="hint">
+          Nếu tiếng dịch hay bị ngắt giữa câu, chọn <strong>Ưu tiên mượt</strong>. Bộ đệm là thích ứng:
+          tự tăng khi mạng chập chờn và tự giảm về mức thấp nhất khi mạng ổn định, nên độ trễ luôn
+          ở mức tối thiểu mà mạng của bạn cho phép.
+        </p>
+      </section>
+
+      <section>
+        <label class="checkbox">
+          <input id="echoTargetLanguage" type="checkbox">
+          <span>Nếu audio nguồn đã là ngôn ngữ đích thì đọc lại nguyên văn <span class="muted">(mặc định: im lặng)</span></span>
+        </label>
+      </section>
+
+      <div class="actions">
+        <button id="save" class="btn-primary">Lưu cài đặt</button>
+        <span id="savedNote" class="saved-note" role="status"></span>
+      </div>
+    </div>
+
+    <footer>
+      <p>
+        Mẹo: giữ âm lượng tab nguồn rõ ràng và dùng mạng ổn định để bản dịch mượt nhất.
+        Extension không thu thập hay gửi dữ liệu đi đâu ngoài Google Gemini.
+      </p>
+    </footer>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

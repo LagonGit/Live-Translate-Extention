@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Khóa riêng dùng để ký .crx — TUYỆT ĐỐI không commit
+*.pem
+
+# Thư mục build
+dist/
+
+# Bản zip cũ để lẫn ở gốc repo
+*.zip
