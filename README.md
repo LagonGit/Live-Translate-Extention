@@ -13,7 +13,7 @@ Watching a Coursera lecture, sitting in a Zoom Web meeting, or catching a webina
 
 Powered by the Live Translate API from Google AI Studio.
 
-> **Note on language:** the extension's own interface is currently in Vietnamese. Everything in this document is in English.
+> **On languages:** the interface is in English — the translation is whatever you want it to be. Choose from 70+ target languages in the settings; Vietnamese is simply the default, not a limit.
 
 ---
 
