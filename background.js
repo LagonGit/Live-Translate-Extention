@@ -1,5 +1,10 @@
 const OFFSCREEN_URL = 'offscreen.html';
 
+async function isCaptionCollapsed() {
+  const { captionCollapsed } = await chrome.storage.session.get('captionCollapsed');
+  return captionCollapsed === true;
+}
+
 // Active-tab state lives in chrome.storage.session, not in memory: MV3 service
 // workers are killed at will and an in-memory Map would forget a running session.
 async function getActiveTabId() {
@@ -89,6 +94,7 @@ async function startTranslation(tab) {
   const prevTabId = await getActiveTabId();
   if (prevTabId !== null) await stopTranslation(prevTabId);
 
+  await chrome.storage.session.remove('captionCollapsed');
   await ensureOffscreenDocument();
   await injectContentScript(tab.id);
   await notifyTab(tab.id, { type: 'status', state: 'starting' });
@@ -111,6 +117,7 @@ async function stopTranslation(tabId, { notifyStopped = true } = {}) {
   await sendToOffscreen({ type: 'stop', tabId });
   await closeOffscreenDocument();
   await setActiveTabId(null);
+  await chrome.storage.session.remove('captionCollapsed');
   await setBadge(tabId, '');
   if (notifyStopped) await notifyTab(tabId, { type: 'status', state: 'stopped' });
 }
@@ -154,8 +161,23 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
   if (changeInfo.status !== 'complete') return;
   if ((await getActiveTabId()) !== tabId) return;
   if (await injectContentScript(tabId)) {
-    await notifyTab(tabId, { type: 'status', state: 'running' });
+    await notifyTab(tabId, { type: 'status', state: 'running', collapsed: await isCaptionCollapsed() });
   }
+});
+
+// Listen only to the active tab's content script. Keep the state in session
+// storage so an MV3 service worker restart or page navigation cannot lose it.
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (!message || message.target !== 'background' || message.type !== 'captionVisibility') return;
+  if (!sender || sender.id !== chrome.runtime.id || typeof sender.tab?.id !== 'number') return;
+
+  const tabId = sender.tab.id;
+  (async () => {
+    if ((await getActiveTabId()) !== tabId) return;
+    const collapsed = message.collapsed === true;
+    await chrome.storage.session.set({ captionCollapsed: collapsed });
+    await sendToOffscreen({ type: 'captionVisibility', tabId, visible: !collapsed });
+  })().catch((err) => console.warn('Unable to update subtitle visibility', err));
 });
 
 // Relay messages from the offscreen document to the right tab's overlay.

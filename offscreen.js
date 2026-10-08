@@ -28,6 +28,8 @@ const SILENCE_GAP_S = 1.5; // gaps longer than this are natural pauses, not unde
 const INPUT_HOLD_MAX_S = 5; // source audio kept while the socket reconnects
 
 let session = null;
+let captionTabId = null;
+let captionsVisible = true;
 
 function sendToBackground(message) {
   try {
@@ -338,14 +340,18 @@ function handleServerMessage(s, data) {
   const content = msg.serverContent;
   if (!content) return;
 
-  if (content.inputTranscription && typeof content.inputTranscription.text === 'string') {
-    sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'input', text: content.inputTranscription.text });
-  }
-  if (content.outputTranscription && typeof content.outputTranscription.text === 'string') {
-    sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'output', text: content.outputTranscription.text });
-  }
-  if (content.turnComplete) {
-    sendToBackground({ type: 'turn', tabId: s.tabId });
+  // Translation audio continues normally, but minimized captions never reach
+  // the service worker, content script, or page DOM.
+  if (captionsVisible) {
+    if (content.inputTranscription && typeof content.inputTranscription.text === 'string') {
+      sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'input', text: content.inputTranscription.text });
+    }
+    if (content.outputTranscription && typeof content.outputTranscription.text === 'string') {
+      sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'output', text: content.outputTranscription.text });
+    }
+    if (content.turnComplete) {
+      sendToBackground({ type: 'turn', tabId: s.tabId });
+    }
   }
   if (content.modelTurn && Array.isArray(content.modelTurn.parts)) {
     for (const part of content.modelTurn.parts) {
@@ -440,11 +446,19 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   if (!sender || sender.id !== chrome.runtime.id) return;
 
   if (message.type === 'start') {
+    // Set this before awaiting getUserMedia, so a fast minimize click is not lost.
+    captionTabId = message.tabId;
+    captionsVisible = true;
     startSession(message).catch((err) => {
       sendToBackground({ type: 'error', tabId: message.tabId, message: String((err && err.message) || err) });
       stopSessionInternal();
     });
+  } else if (message.type === 'captionVisibility') {
+    if (captionTabId === message.tabId) captionsVisible = message.visible === true;
   } else if (message.type === 'stop') {
+    if (captionTabId !== message.tabId) return;
+    captionTabId = null;
+    captionsVisible = true;
     stopSessionInternal();
   }
 });

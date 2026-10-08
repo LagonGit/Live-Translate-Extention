@@ -11,13 +11,13 @@
   background: rgba(12, 14, 20, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
-  padding: 11px 18px 13px;
+  padding: 11px 46px 13px 18px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: #f3f4f6;
   box-shadow: 0 10px 36px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(10px) saturate(1.3);
   -webkit-backdrop-filter: blur(10px) saturate(1.3);
-  pointer-events: none;
+  pointer-events: auto;
   user-select: none;
   text-align: left;
   animation: __lt-fade-in 0.25s ease-out;
@@ -96,4 +96,97 @@
 #__live-translate-overlay .lt-output:empty,
 #__live-translate-overlay .lt-input:empty {
   display: none;
+}
+
+/* Minimize / restore captions without interrupting audio translation. */
+#__live-translate-overlay .lt-toggle {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+  font: 600 24px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#__live-translate-overlay .lt-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#__live-translate-overlay .lt-toggle:focus-visible {
+  outline: 2px solid #a5b4fc;
+  outline-offset: 2px;
+}
+
+#__live-translate-overlay .lt-open-icon {
+  display: none;
+}
+
+#__live-translate-overlay[data-collapsed="true"] {
+  left: auto;
+  right: calc(12px + env(safe-area-inset-right, 0px));
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  transform: none;
+  width: 48px;
+  height: 48px;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  border-radius: 50%;
+  text-align: center;
+  animation: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+#__live-translate-overlay[data-collapsed="true"] .lt-content,
+#__live-translate-overlay[data-collapsed="true"] .lt-close-icon {
+  display: none;
+}
+
+#__live-translate-overlay[data-collapsed="true"] .lt-open-icon {
+  display: inline;
+}
+
+#__live-translate-overlay[data-collapsed="true"] .lt-toggle {
+  position: static;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 600px) {
+  #__live-translate-overlay:not([data-collapsed="true"]) {
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    width: calc(100vw - 24px);
+    min-width: 0;
+    max-width: calc(100vw - 24px);
+    max-height: 38vh;
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #__live-translate-overlay {
+    animation: none;
+  }
+  #__live-translate-overlay .lt-dot {
+    animation: none;
+  }
 }
