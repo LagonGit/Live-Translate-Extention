@@ -31,7 +31,15 @@ const testResultEl = document.getElementById('testResult');
 const targetLanguageSelect = document.getElementById('targetLanguage');
 const bufferModeSelect = document.getElementById('bufferMode');
 const echoCheckbox = document.getElementById('echoTargetLanguage');
+const filterFillersCheckbox = document.getElementById('filterFillers');
+const originalAudioDuckingCheckbox = document.getElementById('originalAudioDucking');
+const duckingLevelSelect = document.getElementById('duckingLevel');
 const saveButton = document.getElementById('save');
+
+function updateDuckingControls() {
+  duckingLevelSelect.disabled = !originalAudioDuckingCheckbox.checked;
+}
+originalAudioDuckingCheckbox.addEventListener('change', updateDuckingControls);
 const savedNote = document.getElementById('savedNote');
 
 for (const [code, name] of LANGUAGES) {
@@ -42,16 +50,23 @@ for (const [code, name] of LANGUAGES) {
 }
 
 async function load() {
-  const { apiKey, targetLanguageCode, echoTargetLanguage, bufferMode } = await chrome.storage.local.get([
+  const { apiKey, targetLanguageCode, echoTargetLanguage, bufferMode, filterFillers, originalAudioDucking, duckingLevel } = await chrome.storage.local.get([
     'apiKey',
     'targetLanguageCode',
     'echoTargetLanguage',
     'bufferMode',
+    'filterFillers',
+    'originalAudioDucking',
+    'duckingLevel',
   ]);
   if (apiKey) apiKeyInput.value = apiKey;
   targetLanguageSelect.value = targetLanguageCode || 'vi';
   bufferModeSelect.value = bufferMode || 'balanced';
   echoCheckbox.checked = !!echoTargetLanguage;
+  filterFillersCheckbox.checked = !!filterFillers;
+  originalAudioDuckingCheckbox.checked = !!originalAudioDucking;
+  duckingLevelSelect.value = ['0', '0.15', '0.30'].includes(String(duckingLevel)) ? String(duckingLevel) : '0.15';
+  updateDuckingControls();
 }
 
 toggleKeyButton.addEventListener('click', () => {
@@ -100,6 +115,9 @@ saveButton.addEventListener('click', async () => {
     targetLanguageCode: targetLanguageSelect.value,
     echoTargetLanguage: echoCheckbox.checked,
     bufferMode: bufferModeSelect.value,
+    filterFillers: filterFillersCheckbox.checked,
+    originalAudioDucking: originalAudioDuckingCheckbox.checked,
+    duckingLevel: Number(duckingLevelSelect.value),
   });
   savedNote.textContent = key ? 'Saved. Now just click the extension icon on the tab you want translated.' : 'Saved (no API key set).';
   savedNote.classList.add('show');

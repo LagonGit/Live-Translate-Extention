@@ -27,7 +27,16 @@ const LEAD_DECAY_CLEAN_S = 20; // how long playback must run clean before shrink
 const SILENCE_GAP_S = 1.5; // gaps longer than this are natural pauses, not underruns
 const INPUT_HOLD_MAX_S = 5; // source audio kept while the socket reconnects
 
+// Reintroduce original tab audio when the *translated* speech is not playing.
+// This intentionally follows translated playback, not a speech/music classifier.
+const DUCK_ATTACK_S = 0.025;
+const DUCK_RELEASE_S = 0.10;
+const DUCK_LOOKAHEAD_S = 0.04;
+const MERGE_SPEECH_GAP_S = 0.12;
+
 let session = null;
+let captionTabId = null;
+let captionsVisible = true;
 
 function sendToBackground(message) {
   try {
@@ -91,7 +100,7 @@ function pcm16BytesToFloat32(bytes) {
 
 // ---------- session lifecycle ----------
 
-async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoTargetLanguage, bufferMode }) {
+async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoTargetLanguage, bufferMode, originalAudioDucking, duckingLevel }) {
   stopSessionInternal();
 
   const buffering = BUFFER_MODES[bufferMode] || BUFFER_MODES.balanced;
@@ -124,6 +133,8 @@ async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoT
   // route through a zero-gain node so the untranslated audio isn't heard twice.
   const muteNode = captureContext.createGain();
   muteNode.gain.value = 0;
+  const originalAudioGain = originalAudioDucking ? captureContext.createGain() : null;
+  if (originalAudioGain) originalAudioGain.gain.value = 1;
 
   const s = {
     tabId,
@@ -136,6 +147,9 @@ async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoT
     sourceNode,
     workletNode,
     muteNode,
+    originalAudioGain,
+    duckingLevel: [0, 0.15, 0.3].includes(duckingLevel) ? duckingLevel : 0.15,
+    originalAudioIntervals: [],
     ws: null,
     ready: false,
     everReady: false,
@@ -158,6 +172,12 @@ async function startSession({ tabId, streamId, apiKey, targetLanguageCode, echoT
   sourceNode.connect(workletNode);
   workletNode.connect(muteNode);
   muteNode.connect(captureContext.destination);
+  if (originalAudioGain) {
+    // tabCapture suppresses ordinary tab playback; this separate graph routes
+    // the original sound back through a controllable gain to the speakers.
+    sourceNode.connect(originalAudioGain);
+    originalAudioGain.connect(captureContext.destination);
+  }
 
   const [track] = stream.getAudioTracks();
   track.addEventListener('ended', () => {
@@ -293,6 +313,47 @@ function drainQueue(s) {
 
 // ---------- downstream: Live API -> transcripts + translated audio ----------
 
+// Rebuild a small schedule of ducked intervals each time a dubbed PCM chunk is
+// scheduled. Merging adjacent chunks prevents pumping between syllables.
+// Timing is mapped between the separate capture/playback AudioContexts.
+function scheduleOriginalAudioDucking(s, playbackStart, playbackEnd) {
+  if (!s.originalAudioGain) return;
+  const now = s.captureContext.currentTime;
+  const offset = now - s.playbackContext.currentTime;
+  const start = playbackStart + offset;
+  const end = playbackEnd + offset;
+  if (end <= now) return;
+
+  const intervals = s.originalAudioIntervals.filter(interval => interval.end > now);
+  intervals.push({ start, end });
+  intervals.sort((a, b) => a.start - b.start);
+  const merged = [];
+  for (const interval of intervals) {
+    const last = merged[merged.length - 1];
+    if (last && interval.start <= last.end + MERGE_SPEECH_GAP_S) {
+      last.end = Math.max(last.end, interval.end);
+    } else {
+      merged.push({ ...interval });
+    }
+  }
+  s.originalAudioIntervals = merged;
+
+  const gain = s.originalAudioGain.gain;
+  // Capture the instantaneous gain before replacing future automations.
+  const currentValue = gain.value;
+  gain.cancelScheduledValues(now);
+  gain.setValueAtTime(currentValue, now);
+  if (merged[0].start > now) {
+    gain.setTargetAtTime(1, now, DUCK_RELEASE_S);
+  }
+  for (const interval of merged) {
+    gain.setTargetAtTime(s.duckingLevel, Math.max(now, interval.start - DUCK_LOOKAHEAD_S), DUCK_ATTACK_S);
+    gain.setTargetAtTime(1, interval.end, DUCK_RELEASE_S);
+  }
+}
+
+// ---------- downstream: Live API -> transcripts + translated audio ----------
+
 function handleServerMessage(s, data) {
   // The Live API sends JSON in binary frames as well as text frames.
   let text;
@@ -338,14 +399,18 @@ function handleServerMessage(s, data) {
   const content = msg.serverContent;
   if (!content) return;
 
-  if (content.inputTranscription && typeof content.inputTranscription.text === 'string') {
-    sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'input', text: content.inputTranscription.text });
-  }
-  if (content.outputTranscription && typeof content.outputTranscription.text === 'string') {
-    sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'output', text: content.outputTranscription.text });
-  }
-  if (content.turnComplete) {
-    sendToBackground({ type: 'turn', tabId: s.tabId });
+  // Translation audio continues normally, but minimized captions never reach
+  // the service worker, content script, or page DOM.
+  if (captionsVisible) {
+    if (content.inputTranscription && typeof content.inputTranscription.text === 'string') {
+      sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'input', text: content.inputTranscription.text });
+    }
+    if (content.outputTranscription && typeof content.outputTranscription.text === 'string') {
+      sendToBackground({ type: 'transcript', tabId: s.tabId, role: 'output', text: content.outputTranscription.text });
+    }
+    if (content.turnComplete) {
+      sendToBackground({ type: 'turn', tabId: s.tabId });
+    }
   }
   if (content.modelTurn && Array.isArray(content.modelTurn.parts)) {
     for (const part of content.modelTurn.parts) {
@@ -398,8 +463,11 @@ function playTranslatedAudio(s, base64Data) {
     const rate = excess > 3 ? 1.12 : excess > 1.5 ? 1.06 : 1;
     node.playbackRate.value = rate;
 
-    node.start(s.nextPlayTime);
-    s.nextPlayTime += buffer.duration / rate;
+    const playStart = s.nextPlayTime;
+    const playEnd = playStart + buffer.duration / rate;
+    scheduleOriginalAudioDucking(s, playStart, playEnd);
+    node.start(playStart);
+    s.nextPlayTime = playEnd;
   } catch (e) {}
 }
 
@@ -418,6 +486,7 @@ function stopSessionInternal() {
     s.sourceNode.disconnect();
     s.workletNode.disconnect();
     s.muteNode.disconnect();
+    if (s.originalAudioGain) s.originalAudioGain.disconnect();
   } catch (e) {}
   try {
     s.stream.getTracks().forEach((t) => t.stop());
@@ -440,11 +509,19 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   if (!sender || sender.id !== chrome.runtime.id) return;
 
   if (message.type === 'start') {
+    // Set this before awaiting getUserMedia, so a fast minimize click is not lost.
+    captionTabId = message.tabId;
+    captionsVisible = true;
     startSession(message).catch((err) => {
       sendToBackground({ type: 'error', tabId: message.tabId, message: String((err && err.message) || err) });
       stopSessionInternal();
     });
+  } else if (message.type === 'captionVisibility') {
+    if (captionTabId === message.tabId) captionsVisible = message.visible === true;
   } else if (message.type === 'stop') {
+    if (captionTabId !== message.tabId) return;
+    captionTabId = null;
+    captionsVisible = true;
     stopSessionInternal();
   }
 });

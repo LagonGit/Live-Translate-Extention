@@ -15,6 +15,9 @@
   let rawOutput = '';
   let rawInput = '';
   let removeTimer = null;
+  let toggleButton = null;
+  let collapsed = false;
+  let filterFillers = false;
 
   function ensureOverlay() {
     if (overlay && overlay.isConnected) return;
@@ -37,9 +40,30 @@
     inputEl = document.createElement('div');
     inputEl.className = 'lt-input';
 
-    overlay.appendChild(statusRow);
-    overlay.appendChild(outputEl);
-    overlay.appendChild(inputEl);
+    const captionContent = document.createElement('div');
+    captionContent.id = '__live-translate-caption-content';
+    captionContent.className = 'lt-content';
+    captionContent.append(statusRow, outputEl, inputEl);
+
+    toggleButton = document.createElement('button');
+    toggleButton.type = 'button';
+    toggleButton.className = 'lt-toggle';
+    toggleButton.setAttribute('aria-controls', captionContent.id);
+
+    const closeIcon = document.createElement('span');
+    closeIcon.className = 'lt-close-icon';
+    closeIcon.setAttribute('aria-hidden', 'true');
+    closeIcon.textContent = '×';
+    const openIcon = document.createElement('span');
+    openIcon.className = 'lt-open-icon';
+    openIcon.setAttribute('aria-hidden', 'true');
+    openIcon.textContent = 'CC';
+    toggleButton.append(closeIcon, openIcon);
+    toggleButton.addEventListener('click', () => setCollapsed(!collapsed));
+
+    overlay.append(captionContent, toggleButton);
+    overlay.dataset.collapsed = String(collapsed);
+    updateToggleLabel();
     (document.body || document.documentElement).appendChild(overlay);
   }
 
@@ -50,8 +74,43 @@
     }
     if (overlay) overlay.remove();
     overlay = null;
+    toggleButton = null;
     rawOutput = '';
     rawInput = '';
+    collapsed = false;
+  }
+
+  function updateToggleLabel() {
+    if (!toggleButton) return;
+    const label = collapsed ? 'Show live subtitles' : 'Hide live subtitles';
+    toggleButton.setAttribute('aria-label', label);
+    toggleButton.setAttribute('aria-expanded', String(!collapsed));
+    toggleButton.title = label;
+  }
+
+  function setCollapsed(nextCollapsed, notify = true) {
+    const previous = collapsed;
+    collapsed = !!nextCollapsed;
+    ensureOverlay();
+    overlay.dataset.collapsed = String(collapsed);
+    updateToggleLabel();
+
+    if (collapsed && !previous) {
+      // Drop the hidden transcript instead of updating invisible text nodes.
+      rawOutput = '';
+      rawInput = '';
+      outputEl.textContent = '';
+      inputEl.textContent = '';
+    }
+
+    if (notify && collapsed !== previous) {
+      // Tell the offscreen document to stop forwarding captions while minimized.
+      chrome.runtime.sendMessage({
+        target: 'background',
+        type: 'captionVisibility',
+        collapsed,
+      }).catch(() => {});
+    }
   }
 
   function setStatus(state, text) {
@@ -64,8 +123,23 @@
     statusTextEl.textContent = text;
   }
 
+  // Match standalone hesitation noises in English/Hungarian, without stripping
+  // embedded words (e.g. "summer" or "rumor"). Comma-separated discourse
+  // markers are removed only at the start of a new sentence/utterance.
+  function removeFillers(text) {
+    return text
+      // Never remove matching text from the middle of a normal word.
+      .replace(/(^|[^\p{L}\p{N}])(?:[öő]+|izé|uh+m*|um+|erm+|er+|hmm+)(?=$|[^\p{L}\p{N}])\s*[,;]?\s*/giu, '$1')
+      // Discourse markers can carry meaning. Only treat them as fillers
+      // when used as comma-terminated, sentence-initial interjections.
+      .replace(/(^|[.!?…]\s*)\s*(?:(?:you\s+know|i\s+mean|szóval|tudod|hát|well|so|like)\s*,\s*)+/giu, '$1')
+      .replace(/(^|[.!?…]\s*)[,;]\s*/g, '$1')
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\s+([,.;:!?…])/g, '$1');
+  }
+
   function renderCaption(el, raw, maxShown) {
-    let text = raw.trimStart();
+    let text = (filterFillers ? removeFillers(raw) : raw).trimStart();
     if (text.length > maxShown) {
       // Cut at the window, then drop the leading partial word.
       text = text.slice(-maxShown).replace(/^\S{0,30}\s+/, '');
@@ -80,6 +154,9 @@
     if (!message || typeof message.type !== 'string') return;
 
     if (message.type === 'status') {
+      if (typeof message.filterFillers === 'boolean') filterFillers = message.filterFillers;
+      // Restore the minimized state after a page navigation.
+      if (typeof message.collapsed === 'boolean') setCollapsed(message.collapsed, false);
       switch (message.state) {
         case 'starting':
           setStatus('connecting', 'Connecting…');
@@ -102,6 +179,7 @@
     }
 
     if (message.type === 'transcript') {
+      if (collapsed) return;
       ensureOverlay();
       // Transcripts stream in as fragments — accumulate, then show a sliding window.
       if (message.role === 'output') {
@@ -115,6 +193,7 @@
     }
 
     if (message.type === 'turn') {
+      if (collapsed) return;
       // Sentence boundary from the model: keep fragments from gluing together.
       if (rawOutput && !rawOutput.endsWith(' ')) rawOutput += ' ';
       if (rawInput && !rawInput.endsWith(' ')) rawInput += ' ';
